@@ -20,12 +20,17 @@ class AsyncSerialProtocol(asyncio.Protocol):
         print("Data received:", data.decode())
         #answer_pattern = r"/0(.)(.*)\x03\r"
         if len(s) > 512:
-            status_code = 'O'
+            status_code = 'O' # means buffer overflow error
         else:
-            status_code = '`'
-
+            status_code = '@' # means busy -- no error
         response = f'/0{status_code}\x03\r'.encode()
         self.transport.write(response)
+
+        if status_code == "@":
+            time.sleep(1)
+            response = f'/0`\x03\r'.encode() # ready response
+            self.transport.write(response)
+
 
     def connection_lost(self, exc):
         print("Port closed")
