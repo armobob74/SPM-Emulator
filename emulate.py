@@ -24,12 +24,17 @@ class AsyncSerialProtocol(asyncio.Protocol):
         else:
             status_code = '@' # means busy -- no error
         response = f'/0{status_code}\x03\r'.encode()
+        print("first response ",response)
         self.transport.write(response)
 
         if status_code == "@":
-            time.sleep(1)
-            response = f'/0`\x03\r'.encode() # ready response
-            self.transport.write(response)
+            asyncio.create_task(self.send_ready_response_after_delay())
+
+    async def send_ready_response_after_delay(self):
+        await asyncio.sleep(4)
+        response = f'/0`\x03\r'.encode()  # ready response
+        print("next response", response)
+        self.transport.write(response)
 
 
     def connection_lost(self, exc):
