@@ -1,4 +1,5 @@
 from parse_logfile import parseLogfile
+from string_utils import determineStatusCode
 import asyncio
 import serial
 import serial_asyncio
@@ -11,29 +12,31 @@ class AsyncSerialProtocol(asyncio.Protocol):
     handles all async communications stuff
     takes in serial comms and returns what it hopes the spm normally would
     """
+    def __init__(self):
+        self.msg_id = 0
     def connection_made(self, transport):
         self.transport = transport
         print("Port opened")
 
     def data_received(self, data):
+        msg_id = self.msg_id
         s = data.decode('utf-8')
-        print("Data received:", data.decode())
+        print(f"id-{msg_id} Data received:",s)
+        status_code = determineStatusCode(s)
         #answer_pattern = r"/0(.)(.*)\x03\r"
-        if len(s) > 512:
-            status_code = 'O' # means buffer overflow error
-        else:
-            status_code = '@' # means busy -- no error
         response = f'/0{status_code}\x03\r'.encode()
-        print("first response ",response)
+        print(f"id-{msg_id} first response ",response)
+
         self.transport.write(response)
 
         if status_code == "@":
-            asyncio.create_task(self.send_ready_response_after_delay())
+            asyncio.create_task(self.send_ready_response_after_delay(msg_id))
+        self.msg_id += 1
 
-    async def send_ready_response_after_delay(self):
-        await asyncio.sleep(4)
+    async def send_ready_response_after_delay(self, msg_id=0):
+        await asyncio.sleep(2)
         response = f'/0`\x03\r'.encode()  # ready response
-        print("next response", response)
+        print(f"id-{msg_id} next response", response)
         self.transport.write(response)
 
 
