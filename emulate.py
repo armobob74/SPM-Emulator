@@ -1,4 +1,4 @@
-from parse_logfile import parseLogfile
+from identify_ports import identifyPorts
 from string_utils import determineStatusCode
 import asyncio
 import serial
@@ -52,7 +52,7 @@ async def main(port_name):
     await asyncio.sleep(float('Inf')) # this infinite sleep keeps the event loop running
 
 if __name__ == "__main__":
-    ports = parseLogfile()
+    ports = identifyPorts()
     print('Have SPM on:',ports[0])
     print('Have emulator on:',ports[1])
     asyncio.run(main(ports[1]))

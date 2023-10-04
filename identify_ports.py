@@ -1,7 +1,20 @@
 from re import findall
+from os import name as os_name
 
-def parseLogfile(filename='./logfile.txt'):
+HARDCODED_PORTS = ['COM55','COM56']
+filename = 'logfile.txt'
+
+def identifyPorts(filename=filename):
+    if os_name == 'posix': # Linux
+        return parseLogfile(filename)
+    elif os_name == 'nt': # Windows
+        return HARDCODED_PORTS
+    else:
+        raise OSError(f'OS "{os_name}" not recognized.')
+
+def parseLogfile(filename):
     """
+    [Used only on Linux]
     This function tells the emulator what ports are available to it
     input: path to the logfile where socat output is stored
     output:
