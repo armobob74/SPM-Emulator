@@ -14,8 +14,8 @@ If the simulated ports do not exist, emulate.py asks the user to first run the s
 Otherwise, python starts emulating!
 
 ## Setting up on Windows
-Windows requires a tool called com0com to be installed at C:\Program Files (x86)\com0com
-Once you have this installed, you can set up the virtual ports with the script "setup\_ports.bat"
+Windows requires a tool called com0com to be installed at C:\Program Files (x86)\com0com.
+Once you have this installed, you can set up the virtual ports with the script "setup\_ports.bat".
 If the ports or identifiers are not free, run "close\_ports.bat" and try again. 
 Unlike socat, com0com keeps ports open until you close them manually.
 
